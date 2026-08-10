@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تحميل تطبيق Biscelor</title>
+
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="Biscelor - تحميل التطبيق" />
+    <meta property="og:description" content="نظام التصميم الاحترافي للبطاقات" />
+    <meta property="og:image" content="{{.AppIconURL}}" />
+    <meta property="og:url" content="{{.SiteURL}}" />
+    <meta name="theme-color" content="#0b0b10" />
+
+    <style>
+        /* ===== Reset & Base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f7fa;
+            transition: background 0.2s, color 0.2s;
+            padding: 1.5rem;
+        }
+
+        /* Dark mode (auto) */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #121212;
+                color: #f0f0f0;
+            }
+            .card {
+                background: #1e1e1e;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            }
+            .app-name {
+                color: #ffffff;
+            }
+            .tagline {
+                color: #a0aec0;
+            }
+            .size-badge {
+                background: #2d2d2d;
+                color: #b0b0b0;
+            }
+            .download-btn {
+                background: #2b6cf0;
+                color: #fff;
+            }
+            .download-btn:hover {
+                background: #1a5adf;
+            }
+            .lang-toggle {
+                background: #2d2d2d;
+                color: #ddd;
+                border-color: #444;
+            }
+            .lang-toggle:hover {
+                background: #3a3a3a;
+            }
+            .footer a {
+                color: #8ab4f8;
+            }
+        }
+
+        /* Light mode (auto) */
+        @media (prefers-color-scheme: light) {
+            body {
+                background: #f0f4f8;
+                color: #1a202c;
+            }
+            .card {
+                background: #ffffff;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            }
+            .app-name {
+                color: #0b0b10;
+            }
+            .tagline {
+                color: #4a5568;
+            }
+            .size-badge {
+                background: #e9edf2;
+                color: #2d3748;
+            }
+            .download-btn {
+                background: #1a5be0;
+                color: #fff;
+            }
+            .download-btn:hover {
+                background: #134bc4;
+            }
+            .lang-toggle {
+                background: #e9edf2;
+                color: #1a202c;
+                border-color: #cbd5e0;
+            }
+            .lang-toggle:hover {
+                background: #dce2ea;
+            }
+            .footer a {
+                color: #1a5be0;
+            }
+        }
+
+        /* ===== Card ===== */
+        .card {
+            max-width: 420px;
+            width: 100%;
+            padding: 2.5rem 2rem 2rem;
+            border-radius: 42px;
+            text-align: center;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 28px;
+            object-fit: cover;
+            background: #e2e8f0;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            margin: 0 auto 0.75rem;
+            display: block;
+        }
+
+        .app-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-top: 0.25rem;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            opacity: 0.8;
+        }
+
+        .size-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.35rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: #e9edf2;
+            color: #2d3748;
+        }
+
+        .size-badge span {
+            font-weight: 600;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 1.8rem;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            text-decoration: none;
+            color: #fff;
+            background: #1a5be0;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .download-btn:active {
+            transform: scale(0.97);
+        }
+
+        .download-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .lang-toggle {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: #e9edf2;
+            border: 1px solid #cbd5e0;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #1a202c;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-toggle:hover {
+            background: #dce2ea;
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .footer a {
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* RTL / LTR handling */
+        [dir="rtl"] .lang-toggle {
+            right: auto;
+            left: 1.2rem;
+        }
+
+        /* small screens */
+        @media (max-width: 480px) {
+            .card {
+                padding: 2rem 1.25rem 1.8rem;
+                border-radius: 32px;
+            }
+            .app-icon {
+                width: 100px;
+                height: 100px;
+            }
+            .app-name {
+                font-size: 1.8rem;
+            }
+            .download-btn {
+                font-size: 1rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Language Toggle -->
+    <button class="lang-toggle" id="langToggle" aria-label="تبديل اللغة / Switch language">
+        <span id="langIcon">🇸🇦</span>
+        <span id="langLabel">AR</span>
+    </button>
+
+    <!-- Main Card -->
+    <div class="card" id="appCard">
+        <!-- App Icon (from env or fallback) -->
+        <img
+        class="app-icon"
+        id="appIcon"
+        src="{{.AppIconURL}}"
+        alt="Biscelor App Icon"
+        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%232b6cf0%22/%3E%3Ctext x=%2250%22 y=%22130%22 font-size=%2290%22 font-family=%22sans-serif%22 fill=%22white%22%3E%E2%98%95%3C/text%3E%3C/svg%3E'"
+        />
+
+        <!-- App Name -->
+        <h1 class="app-name" id="appName">Biscelor</h1>
+
+        <!-- Tagline -->
+        <p class="tagline" id="tagline">نظام التصميم الاحترافي</p>
+
+        <!-- App Size Badge -->
+        <div class="size-badge" id="sizeBadge">
+            📦 <span id="appSize">{{.AppSize}}</span>
+        </div>
+
+        <!-- Download Button -->
+        <a
+        class="download-btn"
+        id="downloadBtn"
+        href="{{.DownloadURL}}"
+        target="_blank"
+        rel="noopener noreferrer"
+        download
+        >
+        <!-- Download SVG -->
+        <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+            <path d="M12 15l-4-4h2.5V8h3v3H16l-4 4z"/>
+            <path d="M8 17h8v1.5H8V17z"/>
+        </svg>
+        <span id="downloadLabel">تحميل التطبيق</span>
+    </a>
+
+    <!-- Footer / version + support -->
+    <div class="footer">
+        <span id="footerVersion">الإصدار {{.AppVersion}}</span>
+        &nbsp;·&nbsp;
+        <a href="{{.SupportLink}}" target="_blank" rel="noopener" id="supportLink">الدعم</a>
+    </div>
+</div>
+
+<script>
+    (function() {
+        "use strict";
+
+        // ----- DOM refs -----
+        const langToggle = document.getElementById('langToggle');
+        const langIcon = document.getElementById('langIcon');
+        const langLabel = document.getElementById('langLabel');
+
+        const appName = document.getElementById('appName');
+        const tagline = document.getElementById('tagline');
+        const downloadLabel = document.getElementById('downloadLabel');
+        const appSize = document.getElementById('appSize');
+        const footerVersion = document.getElementById('footerVersion');
+        const supportLink = document.getElementById('supportLink');
+
+        // ----- Translation data (mirroring the i18n.ts structure for the download page) -----
+        const translations = {
+            ar: {
+                appName: 'بيسكلير',
+                tagline: 'نظام التصميم الاحترافي',
+                downloadLabel: 'تحميل التطبيق',
+                sizeLabel: 'حجم التطبيق',
+                versionPrefix: 'الإصدار',
+                supportText: 'الدعم',
+                langLabel: 'AR',
+                langIcon: '🇸🇦',
+                // app size and version will be injected from Go template
+            },
+            en: {
+                appName: 'Biscelor',
+                tagline: 'Professional Design System',
+                downloadLabel: 'Download App',
+                sizeLabel: 'App Size',
+                versionPrefix: 'Version',
+                supportText: 'Support',
+                langLabel: 'EN',
+                langIcon: '🇬🇧',
+            }
+        };
+
+        // ----- Detect current language (from HTML lang or localStorage) -----
+        let currentLang = document.documentElement.lang || 'ar';
+        // fallback: if lang is not ar/en, default to ar
+        if (currentLang !== 'ar' && currentLang !== 'en') {
+            currentLang = 'ar';
+        }
+
+        // ----- Load saved preference -----
+        const savedLang = localStorage.getItem('biscelor_lang');
+        if (savedLang === 'ar' || savedLang === 'en') {
+            currentLang = savedLang;
+        }
+
+        // ----- Apply language -----
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            // update DOM
+            appName.textContent = t.appName;
+            tagline.textContent = t.tagline;
+            downloadLabel.textContent = t.downloadLabel;
+            langLabel.textContent = t.langLabel;
+            langIcon.textContent = t.langIcon;
+            // support link text is static in HTML, but we can update it if needed
+            // supportLink.textContent = t.supportText; // we keep it as 'الدعم' or 'Support' via innerHTML? let's set it.
+            supportLink.textContent = t.supportText;
+
+            // version prefix: we keep the version number from the template, but we can update the prefix
+            const versionNum = footerVersion.textContent.replace(/[^0-9.]/g, ''); // extract version number
+            if (versionNum) {
+                footerVersion.textContent = t.versionPrefix + ' ' + versionNum;
+            } else {
+                // if no version number, just show prefix
+                footerVersion.textContent = t.versionPrefix;
+            }
+
+            // update dir and lang attribute
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+                document.documentElement.lang = 'ar';
+            } else {
+                document.documentElement.dir = 'ltr';
+                document.documentElement.lang = 'en';
+            }
+
+            // save preference
+            localStorage.setItem('biscelor_lang', lang);
+            currentLang = lang;
+        }
+
+        // ----- Toggle handler -----
+        function toggleLanguage() {
+            const nextLang = currentLang === 'ar' ? 'en' : 'ar';
+            applyLanguage(nextLang);
+        }
+
+        langToggle.addEventListener('click', toggleLanguage);
+
+        // ----- initial apply -----
+        applyLanguage(currentLang);
+
+        // ----- (optional) Respect system dark/light via CSS media queries (already done) -----
+
+        // ----- Security: prevent clickjacking / basic CSP (handled by server) -----
+        // (No client-side eval, no inline dangerous scripts)
+
+        // ----- If download URL is missing, disable button -----
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn.getAttribute('href') === '' || downloadBtn.getAttribute('href') === '#') {
+            downloadBtn.style.opacity = '0.6';
+            downloadBtn.style.cursor = 'default';
+            downloadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('رابط التحميل غير متوفر حالياً / Download link not available');
+            });
+        }
+
+        // ----- (optional) handle app icon fallback (already in img onerror) -----
+
+        console.log('✅ Biscelor download page loaded successfully.');
+    })();
+</script>
+
+<!--
+    Environment variables injected by Go template:
+    {{.AppIconURL}}   - URL to app icon (PNG/WebP)
+    {{.AppSize}}      - e.g. "24.5 MB"
+    {{.AppVersion}}   - e.g. "1.2.3"
+    {{.DownloadURL}}  - direct download link (from env)
+    {{.SiteURL}}      - canonical URL (for OG)
+    {{.SupportLink}}  - support contact (WhatsApp/Telegram/email)
+-->
+</body>
+  </html>
