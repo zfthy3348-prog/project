@@ -12,7 +12,7 @@
     <meta property="og:url" content="{{.SiteURL}}" />
     <meta name="theme-color" content="#0b0b10" />
 
-    <style>
+    <style nonce="{{.CSPNonce}}>
         /* ===== Reset & Base ===== */
         * {
             margin: 0;
@@ -278,7 +278,12 @@
         id="appIcon"
         src="{{.AppIconURL}}"
         alt="Biscelor App Icon"
-        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%232b6cf0%22/%3E%3Ctext x=%2250%22 y=%22130%22 font-size=%2290%22 font-family=%22sans-serif%22 fill=%22white%22%3E%E2%98%95%3C/text%3E%3C/svg%3E'"
+        width="120"
+        height="120"
+        loading="eager"
+        decoding="async"
+        referrerpolicy="no-referrer"
+        data-fallback="{{.FallbackIconURL}}"
         />
 
         <!-- App Name -->
@@ -318,7 +323,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{.CSPNonce}}>
     (function() {
         "use strict";
 
@@ -437,20 +442,19 @@
             });
         }
 
-        // ----- (optional) handle app icon fallback (already in img onerror) -----
-
-        console.log('✅ Biscelor download page loaded successfully.');
+        // ----- Safe icon fallback without inline event handlers -----
+        const appIcon = document.getElementById('appIcon');
+        const fallbackIcon = appIcon.getAttribute('data-fallback');
+        if (fallbackIcon) {
+            appIcon.addEventListener('error', function() {
+                if (appIcon.src !== fallbackIcon) {
+                    appIcon.src = fallbackIcon;
+                }
+            }, { once: true });
+        }
     })();
 </script>
 
-<!--
-    Environment variables injected by Go template:
-    {{.AppIconURL}}   - URL to app icon (PNG/WebP)
-    {{.AppSize}}      - e.g. "24.5 MB"
-    {{.AppVersion}}   - e.g. "1.2.3"
-    {{.DownloadURL}}  - direct download link (from env)
-    {{.SiteURL}}      - canonical URL (for OG)
-    {{.SupportLink}}  - support contact (WhatsApp/Telegram/email)
--->
+<!-- Values are supplied by the server after validation. -->
 </body>
   </html>
