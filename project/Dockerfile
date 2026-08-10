@@ -1,24 +1,31 @@
-FROM golang:1.21-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
+# Only the module definition is copied first so Docker can cache dependency setup.
 COPY go.mod ./
-
 RUN go mod download
 
 COPY . .
 
-RUN go build -o download-page .
+# Build a static binary without a shell dependency at runtime.
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -trimpath     -ldflags="-s -w"     -o /out/download-page .
 
-FROM alpine:latest
+FROM alpine:3.22
 
-RUN apk --no-cache add ca-certificates tzdata
+RUN apk add --no-cache ca-certificates tzdata     && addgroup -S app     && adduser -S -G app -h /app app
 
-WORKDIR /root/
+WORKDIR /app
 
-COPY --from=builder /app/download-page .
-COPY --from=builder /app/index.html .
+COPY --from=builder /out/download-page /app/download-page
+COPY --from=builder /app/index.html /app/index.html
+
+RUN chown -R app:app /app
+
+USER app
+
+ENV PORT=8080
 
 EXPOSE 8080
 
-CMD ["./download-page"]
+ENTRYPOINT ["/app/download-page"]
