@@ -1,460 +1,374 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>تحميل تطبيق Biscelor</title>
-
-    <!-- Open Graph / Social -->
-    <meta property="og:title" content="Biscelor - تحميل التطبيق" />
-    <meta property="og:description" content="نظام التصميم الاحترافي للبطاقات" />
-    <meta property="og:image" content="{{.AppIconURL}}" />
-    <meta property="og:url" content="{{.SiteURL}}" />
-    <meta name="theme-color" content="#0b0b10" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#b58a32">
+    <meta name="description" content="صفحة تنزيل تطبيق Biscelor">
+    <meta property="og:title" content="Biscelor">
+    <meta property="og:description" content="{{.Tagline}}">
+    {{if .AppIconURL}}<meta property="og:image" content="{{.AppIconURL}}">{{end}}
+    {{if .SiteURL}}<meta property="og:url" content="{{.SiteURL}}">{{end}}
+    <title>{{.AppName}} — تحميل التطبيق</title>
 
     <style nonce="{{.CSPNonce}}">
-        /* ===== Reset & Base ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        :root{
+            --gold:#c9a24d;
+            --gold-2:#e4c36b;
+            --gold-dark:#8c6722;
+            --ink:#17130b;
+            --muted:#746b5b;
+            --paper:#fffdf7;
+            --line:rgba(150,112,38,.18);
+            --glass:rgba(255,255,255,.72);
+            --shadow:0 24px 70px rgba(65,45,12,.14);
+            --radius:28px;
         }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #f5f7fa;
-            transition: background 0.2s, color 0.2s;
-            padding: 1.5rem;
+        *{box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{
+            margin:0;
+            min-height:100vh;
+            color:var(--ink);
+            background:
+                radial-gradient(circle at 10% 0%,rgba(228,195,107,.24),transparent 28rem),
+                radial-gradient(circle at 100% 30%,rgba(201,162,77,.16),transparent 30rem),
+                linear-gradient(135deg,#fbf7ec,#fffdf8 48%,#f6efdf);
+            font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif;
         }
-
-        /* Dark mode (auto) */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #121212;
-                color: #f0f0f0;
-            }
-            .card {
-                background: #1e1e1e;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            }
-            .app-name {
-                color: #ffffff;
-            }
-            .tagline {
-                color: #a0aec0;
-            }
-            .size-badge {
-                background: #2d2d2d;
-                color: #b0b0b0;
-            }
-            .download-btn {
-                background: #2b6cf0;
-                color: #fff;
-            }
-            .download-btn:hover {
-                background: #1a5adf;
-            }
-            .lang-toggle {
-                background: #2d2d2d;
-                color: #ddd;
-                border-color: #444;
-            }
-            .lang-toggle:hover {
-                background: #3a3a3a;
-            }
-            .footer a {
-                color: #8ab4f8;
-            }
+        button,a{font:inherit}
+        button{border:0}
+        a{color:inherit}
+        .shell{width:min(1180px,100%);margin:auto;padding:18px 20px 60px}
+        .topbar{
+            position:sticky;top:14px;z-index:20;
+            display:flex;align-items:center;justify-content:space-between;gap:12px;
+            padding:10px 12px;border:1px solid var(--line);border-radius:22px;
+            background:rgba(255,253,247,.82);backdrop-filter:blur(18px);
+            box-shadow:0 10px 35px rgba(66,45,12,.08)
         }
-
-        /* Light mode (auto) */
-        @media (prefers-color-scheme: light) {
-            body {
-                background: #f0f4f8;
-                color: #1a202c;
-            }
-            .card {
-                background: #ffffff;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            }
-            .app-name {
-                color: #0b0b10;
-            }
-            .tagline {
-                color: #4a5568;
-            }
-            .size-badge {
-                background: #e9edf2;
-                color: #2d3748;
-            }
-            .download-btn {
-                background: #1a5be0;
-                color: #fff;
-            }
-            .download-btn:hover {
-                background: #134bc4;
-            }
-            .lang-toggle {
-                background: #e9edf2;
-                color: #1a202c;
-                border-color: #cbd5e0;
-            }
-            .lang-toggle:hover {
-                background: #dce2ea;
-            }
-            .footer a {
-                color: #1a5be0;
-            }
+        .brand{display:flex;align-items:center;gap:11px;font-weight:800}
+        .brand-mark{width:42px;height:42px;border-radius:14px;object-fit:cover;background:#ead9a9;border:1px solid var(--line)}
+        .brand small{display:block;color:var(--muted);font-weight:500;margin-top:2px}
+        .actions{display:flex;gap:8px;flex-wrap:wrap}
+        .icon-btn,.gold-btn{
+            min-height:42px;border-radius:14px;padding:0 14px;cursor:pointer;
+            display:inline-flex;align-items:center;justify-content:center;gap:7px
         }
-
-        /* ===== Card ===== */
-        .card {
-            max-width: 420px;
-            width: 100%;
-            padding: 2.5rem 2rem 2rem;
-            border-radius: 42px;
-            text-align: center;
-            transition: background 0.2s, box-shadow 0.2s;
+        .icon-btn{background:#fffaf0;border:1px solid var(--line);color:var(--ink)}
+        .gold-btn{
+            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+            color:#fff;box-shadow:0 8px 24px rgba(140,103,34,.2);text-decoration:none
         }
-
-        .app-icon {
-            width: 120px;
-            height: 120px;
-            border-radius: 28px;
-            object-fit: cover;
-            background: #e2e8f0;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-            margin: 0 auto 0.75rem;
-            display: block;
+        .hero{
+            min-height:calc(100vh - 90px);display:grid;grid-template-columns:1.02fr .98fr;
+            align-items:center;gap:48px;padding:55px 0 35px
         }
-
-        .app-name {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-top: 0.25rem;
+        .hero-copy{padding:10px}
+        .eyebrow{
+            display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;
+            background:rgba(201,162,77,.13);border:1px solid var(--line);color:var(--gold-dark);
+            font-weight:800;font-size:.9rem
         }
-
-        .tagline {
-            font-size: 1rem;
-            font-weight: 400;
-            margin-top: 0.25rem;
-            opacity: 0.8;
+        h1{font-size:clamp(2.7rem,7vw,5.8rem);line-height:.98;letter-spacing:-3px;margin:20px 0 15px}
+        .gold-text{background:linear-gradient(100deg,#7d5a1e,var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+        .hero-copy p{font-size:clamp(1rem,2vw,1.25rem);line-height:1.9;color:var(--muted);max-width:650px}
+        .hero-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+        .hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+        .pill{padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.65);border:1px solid var(--line);color:var(--muted)}
+        .showcase{
+            position:relative;overflow:hidden;border-radius:38px;padding:10px;
+            background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(244,229,190,.55));
+            border:1px solid var(--line);box-shadow:var(--shadow)
         }
-
-        .size-badge {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.35rem 1.2rem;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            background: #e9edf2;
-            color: #2d3748;
+        .gallery{position:relative;aspect-ratio:4/4.5;border-radius:30px;overflow:hidden;background:#e9dfc8}
+        .slide{
+            position:absolute;inset:0;opacity:0;transition:opacity .6s ease;
+            display:flex;align-items:center;justify-content:center
         }
-
-        .size-badge span {
-            font-weight: 600;
+        .slide.active{opacity:1}
+        .slide img{width:100%;height:100%;object-fit:cover;display:block}
+        .gallery-shade{position:absolute;inset:auto 0 0;height:35%;background:linear-gradient(transparent,rgba(0,0,0,.5));pointer-events:none}
+        .gallery-caption{position:absolute;right:22px;left:22px;bottom:18px;color:white;font-weight:700;z-index:2}
+        .dots{position:absolute;bottom:18px;left:22px;display:flex;gap:6px;z-index:3}
+        .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer}
+        .dot.active{width:22px;border-radius:9px;background:#fff}
+        .showcase-tools{display:flex;justify-content:space-between;gap:8px;padding:10px 3px 0}
+        .tool{background:#fffaf0;border:1px solid var(--line);padding:10px 14px;border-radius:14px;cursor:pointer}
+        section{padding:55px 0}
+        .section-title{font-size:clamp(1.7rem,4vw,2.7rem);margin:0 0 10px}
+        .section-sub{color:var(--muted);line-height:1.8;margin:0 0 24px}
+        .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+        .panel{
+            background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);
+            box-shadow:0 12px 35px rgba(65,45,12,.06);padding:22px
         }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            margin-top: 1.8rem;
-            padding: 0.9rem 1.5rem;
-            border: none;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.1s;
-            text-decoration: none;
-            color: #fff;
-            background: #1a5be0;
+        .version-card{display:flex;flex-direction:column;min-height:250px}
+        .version-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+        .year{font-size:1.55rem;font-weight:900}
+        .badge{font-size:.78rem;padding:6px 9px;border-radius:999px;background:#f0e5c7;color:var(--gold-dark)}
+        .version-number{font-size:1.1rem;font-weight:800;margin:17px 0 7px}
+        .notes{color:var(--muted);line-height:1.7;min-height:48px}
+        .version-actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+        .disabled{opacity:.5;pointer-events:none}
+        .pricing{
+            display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch
         }
-
-        .download-btn:hover {
-            transform: scale(1.02);
+        .premium{
+            position:relative;overflow:hidden;border:1px solid rgba(201,162,77,.42);
+            background:linear-gradient(145deg,#fff9e9,#f4e5bd);padding:28px;border-radius:32px
         }
-
-        .download-btn:active {
-            transform: scale(0.97);
+        .premium:after{
+            content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+            background:rgba(255,255,255,.35);left:-70px;top:-70px
         }
-
-        .download-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
+        .price{font-size:2.3rem;font-weight:900;margin:12px 0}
+        .feature-list{padding:0;margin:20px 0;list-style:none;display:grid;gap:9px;color:#5d4a25}
+        .feature-list li:before{content:"✓";margin-left:7px;color:var(--gold-dark);font-weight:900}
+        .ad{
+            min-height:120px;display:flex;align-items:center;justify-content:space-between;gap:18px;
+            background:#201a10;color:#fff8e8;border-radius:26px;padding:22px;
+            margin-top:18px
         }
-
-        .lang-toggle {
-            position: fixed;
-            top: 1.2rem;
-            right: 1.2rem;
-            background: #e9edf2;
-            border: 1px solid #cbd5e0;
-            border-radius: 40px;
-            padding: 0.4rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.15s;
-            color: #1a202c;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .ad strong{font-size:1.2rem}
+        footer{padding:35px 0 10px;color:var(--muted);text-align:center}
+        .modal{
+            position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+            padding:20px;background:rgba(12,9,4,.78)
         }
-
-        .lang-toggle:hover {
-            background: #dce2ea;
+        .modal.open{display:flex}
+        .modal-box{width:min(1000px,100%);max-height:90vh;border-radius:24px;overflow:hidden;background:#0c0b09;position:relative}
+        .modal video{width:100%;max-height:78vh;display:block}
+        .modal-close{position:absolute;top:12px;left:12px;z-index:2;width:42px;height:42px;border-radius:50%;cursor:pointer;background:rgba(255,255,255,.9)}
+        .empty{
+            display:flex;align-items:center;justify-content:center;height:100%;min-height:260px;
+            color:#756a55;padding:20px;text-align:center
         }
-
-        .footer {
-            margin-top: 2.5rem;
-            font-size: 0.8rem;
-            opacity: 0.7;
+        @media (prefers-color-scheme:dark){
+            :root{--ink:#f8f1e3;--muted:#c0b6a4;--paper:#18140d;--glass:rgba(31,26,17,.78);--line:rgba(228,195,107,.18)}
+            body{background:radial-gradient(circle at 10% 0%,rgba(201,162,77,.13),transparent 28rem),#100e0a}
+            .topbar,.icon-btn,.tool,.pill{background:rgba(28,24,17,.82)}
+            .showcase{background:linear-gradient(145deg,#242016,#17130d)}
+            .premium{background:linear-gradient(145deg,#302611,#211a0e)}
+            .feature-list{color:#ead9ad}
+            .badge{background:#3a301d;color:#e4c36b}
         }
-
-        .footer a {
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* RTL / LTR handling */
-        [dir="rtl"] .lang-toggle {
-            right: auto;
-            left: 1.2rem;
-        }
-
-        /* small screens */
-        @media (max-width: 480px) {
-            .card {
-                padding: 2rem 1.25rem 1.8rem;
-                border-radius: 32px;
-            }
-            .app-icon {
-                width: 100px;
-                height: 100px;
-            }
-            .app-name {
-                font-size: 1.8rem;
-            }
-            .download-btn {
-                font-size: 1rem;
-                padding: 0.8rem 1rem;
-            }
-        }
-
-        .hidden {
-            display: none !important;
+        @media (max-width:800px){
+            .hero{grid-template-columns:1fr;gap:25px;padding-top:35px;min-height:auto}
+            .hero-copy{order:2;text-align:center}.hero-buttons,.hero-meta{justify-content:center}
+            .hero-copy p{margin-inline:auto}
+            .grid,.pricing{grid-template-columns:1fr}
+            .showcase{max-width:620px;margin:auto;width:100%}
+            h1{letter-spacing:-1.5px}
         }
     </style>
 </head>
 <body>
-
-    <!-- Language Toggle -->
-    <button class="lang-toggle" id="langToggle" aria-label="تبديل اللغة / Switch language">
-        <span id="langIcon">🇸🇦</span>
-        <span id="langLabel">AR</span>
-    </button>
-
-    <!-- Main Card -->
-    <div class="card" id="appCard">
-        <!-- App Icon (from env or fallback) -->
-        <img
-        class="app-icon"
-        id="appIcon"
-        src="{{.AppIconURL}}"
-        alt="Biscelor App Icon"
-        width="120"
-        height="120"
-        loading="eager"
-        decoding="async"
-        referrerpolicy="no-referrer"
-        data-fallback="{{.FallbackIconURL}}"
-        />
-
-        <!-- App Name -->
-        <h1 class="app-name" id="appName">Biscelor</h1>
-
-        <!-- Tagline -->
-        <p class="tagline" id="tagline">نظام التصميم الاحترافي</p>
-
-        <!-- App Size Badge -->
-        <div class="size-badge" id="sizeBadge">
-            📦 <span id="appSize">{{.AppSize}}</span>
+<div class="shell">
+    <header class="topbar">
+        <div class="brand">
+            {{if .AppIconURL}}<img class="brand-mark" src="{{.AppIconURL}}" alt="" width="42" height="42" decoding="async">{{end}}
+            <div>{{.AppName}}<small>متجر التطبيق والإصدارات</small></div>
         </div>
+        <div class="actions">
+            <button class="icon-btn" id="language" type="button">EN</button>
+            <button class="gold-btn" id="fullscreen" type="button">⛶ ملء الشاشة</button>
+        </div>
+    </header>
 
-        <!-- Download Button -->
-        <a
-        class="download-btn"
-        id="downloadBtn"
-        href="{{.DownloadURL}}"
-        target="_blank"
-        rel="noopener noreferrer"
-        download
-        >
-        <!-- Download SVG -->
-        <svg viewBox="0 0 24 24" width="24" height="24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
-            <path d="M12 15l-4-4h2.5V8h3v3H16l-4 4z"/>
-            <path d="M8 17h8v1.5H8V17z"/>
-        </svg>
-        <span id="downloadLabel">تحميل التطبيق</span>
-    </a>
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-copy">
+                <span class="eyebrow">✦ تجربة فاخرة وسريعة</span>
+                <h1>{{.AppName}}<br><span class="gold-text">بشكل أجمل.</span></h1>
+                <p>{{.Tagline}} — استعرض صور التطبيق، شاهد الفيديو، واختر الإصدار المناسب لك من مكان واحد.</p>
+                <div class="hero-buttons">
+                    {{if .DownloadURL}}<a class="gold-btn" href="{{.DownloadURL}}" target="_blank" rel="noopener noreferrer">⬇ تحميل الإصدار الحالي</a>{{end}}
+                    {{if .VideoURL}}<button class="icon-btn" id="videoOpen" type="button">▶ مشاهدة الفيديو</button>{{end}}
+                </div>
+                <div class="hero-meta">
+                    <span class="pill">الإصدار {{.AppVersion}}</span>
+                    <span class="pill">الحجم {{.AppSize}}</span>
+                    <span class="pill">صور متحركة كل 5 ثوانٍ</span>
+                </div>
+            </div>
 
-    <!-- Footer / version + support -->
-    <div class="footer">
-        <span id="footerVersion">الإصدار {{.AppVersion}}</span>
-        &nbsp;·&nbsp;
-        <a href="{{.SupportLink}}" target="_blank" rel="noopener" id="supportLink">الدعم</a>
-    </div>
+            <div class="showcase" id="showcase">
+                <div class="gallery" id="gallery">
+                    {{if .Gallery}}
+                        {{range $i, $item := .Gallery}}
+                        <div class="slide{{if eq $i 0}} active{{end}}" data-index="{{$i}}">
+                            <img src="{{$item.ImageURL}}" alt="{{$item.Alt}}" loading="{{if eq $i 0}}eager{{else}}lazy{{end}}" decoding="async" referrerpolicy="no-referrer">
+                        </div>
+                        {{end}}
+                        <div class="gallery-shade"></div>
+                        <div class="gallery-caption">لقطات حية من التطبيق</div>
+                        <div class="dots" id="dots">
+                            {{range $i, $item := .Gallery}}<button class="dot{{if eq $i 0}} active{{end}}" data-slide="{{$i}}" aria-label="الصورة {{$i | printf "%d"}}"></button>{{end}}
+                        </div>
+                    {{else}}
+                        <div class="empty">ضع رابط صورة التطبيق الحقيقي في<br><b>APP_ICON_URL</b> أو روابط الصور في <b>GALLERY_URLS</b></div>
+                    {{end}}
+                </div>
+                <div class="showcase-tools">
+                    <button class="tool" id="prev" type="button">‹ السابقة</button>
+                    <button class="tool" id="pause" type="button">Ⅱ إيقاف</button>
+                    <button class="tool" id="next" type="button">التالية ›</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="versions">
+            <h2 class="section-title">الإصدارات</h2>
+            <p class="section-sub">احتفظ بإصدارات 2026 و2027 وما بعدها. يمكنك إضافة إصدارات جديدة من إعدادات الخادم دون تغيير التصميم.</p>
+            <div class="grid">
+                {{range .Versions}}
+                <article class="panel version-card">
+                    <div class="version-top">
+                        <span class="year">{{.Year}}</span>
+                        {{if .Published}}<span class="badge">متاح</span>{{else}}<span class="badge">قريباً</span>{{end}}
+                    </div>
+                    <div class="version-number">Version {{.Version}}</div>
+                    <div class="notes">{{.Notes}}</div>
+                    <div class="notes">الحجم: {{.Size}}</div>
+                    <div class="version-actions">
+                        {{if .Published}}{{if .AppURL}}<a class="gold-btn" href="{{.AppURL}}" target="_blank" rel="noopener noreferrer">تطبيق جاهز</a>{{end}}{{if .ZipURL}}<a class="icon-btn" href="{{.ZipURL}}" target="_blank" rel="noopener noreferrer">ZIP مضغوط</a>{{end}}{{end}}
+                    </div>
+                </article>
+                {{end}}
+            </div>
+        </section>
+
+        <section id="premium">
+            <div class="pricing">
+                <div class="premium">
+                    <span class="eyebrow">اشتراك {{.PremiumLabel}}</span>
+                    <div class="price">{{.PremiumPrice}}</div>
+                    <h2>تحميلات خاصة للمشتركين</h2>
+                    <ul class="feature-list">
+                        <li>ملف ZIP للمشروع أو النسخة المطلوبة</li>
+                        <li>نسخة تطبيق جاهزة عند توفير رابطها</li>
+                        <li>إمكانية إضافة إصدارات مستقبلية 2027+</li>
+                        <li>واجهة مرنة لإضافة عروض وإعلانات</li>
+                    </ul>
+                    <div class="version-actions">
+                        {{if .PremiumAppURL}}<a class="gold-btn" href="{{.PremiumAppURL}}" target="_blank" rel="noopener noreferrer">تحميل التطبيق</a>{{end}}
+                        {{if .PremiumZipURL}}<a class="icon-btn" href="{{.PremiumZipURL}}" target="_blank" rel="noopener noreferrer">تحميل ZIP</a>{{end}}
+                    </div>
+                    <p class="notes">مهم: صلاحية الاشتراك نفسها يجب أن تُتحقق في نظام الحساب/الدفع على الخادم. لا تعتمد على JavaScript لإخفاء ملف مدفوع.</p>
+                </div>
+
+                <div class="panel">
+                    <h2>مساحة إعلان مرنة</h2>
+                    <p class="section-sub">يمكنك وضع إعلان، صورة ترويجية، أو عرض موسمي هنا. التصميم لا يعتمد على حجم ثابت للصورة.</p>
+                    <div class="ad"><div><strong>مساحتك الإعلانية</strong><br><span>جاهزة لإضافة حملة أو عرض جديد.</span></div><span>✦</span></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div>© {{.AppName}} — جميع الحقوق محفوظة</div>
+        {{if .SupportLink}}<div style="margin-top:8px"><a href="{{.SupportLink}}" target="_blank" rel="noopener noreferrer">الدعم</a></div>{{end}}
+    </footer>
 </div>
 
+{{if .VideoURL}}
+<div class="modal" id="videoModal" aria-hidden="true" role="dialog" aria-label="فيديو التطبيق">
+    <div class="modal-box">
+        <button class="modal-close" id="videoClose" type="button" aria-label="إغلاق">×</button>
+        <video id="appVideo" controls preload="metadata" playsinline>
+            <source src="{{.VideoURL}}">
+            المتصفح لا يدعم تشغيل الفيديو.
+        </video>
+    </div>
+</div>
+{{end}}
+
 <script nonce="{{.CSPNonce}}">
-    (function() {
-        "use strict";
+(function(){
+    "use strict";
 
-        // ----- DOM refs -----
-        const langToggle = document.getElementById('langToggle');
-        const langIcon = document.getElementById('langIcon');
-        const langLabel = document.getElementById('langLabel');
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const dots = Array.from(document.querySelectorAll(".dot"));
+    const next = document.getElementById("next");
+    const prev = document.getElementById("prev");
+    const pause = document.getElementById("pause");
+    let current = 0;
+    let timer = null;
+    let running = true;
 
-        const appName = document.getElementById('appName');
-        const tagline = document.getElementById('tagline');
-        const downloadLabel = document.getElementById('downloadLabel');
-        const appSize = document.getElementById('appSize');
-        const footerVersion = document.getElementById('footerVersion');
-        const supportLink = document.getElementById('supportLink');
+    function show(index){
+        if(!slides.length) return;
+        current = (index + slides.length) % slides.length;
+        slides.forEach((el,i)=>el.classList.toggle("active",i===current));
+        dots.forEach((el,i)=>el.classList.toggle("active",i===current));
+    }
+    function start(){
+        if(slides.length < 2) return;
+        clearInterval(timer);
+        timer = setInterval(()=>show(current+1),5000);
+        running = true;
+        if(pause) pause.textContent = "Ⅱ إيقاف";
+    }
+    function stop(){
+        clearInterval(timer);
+        running = false;
+        if(pause) pause.textContent = "▶ تشغيل";
+    }
+    next?.addEventListener("click",()=>{show(current+1);start()});
+    prev?.addEventListener("click",()=>{show(current-1);start()});
+    dots.forEach(d=>d.addEventListener("click",()=>{show(Number(d.dataset.slide));start()}));
+    pause?.addEventListener("click",()=>running?stop():start());
+    start();
 
-        // ----- Translation data (mirroring the i18n.ts structure for the download page) -----
-        const translations = {
-            ar: {
-                appName: 'بيسكلير',
-                tagline: 'نظام التصميم الاحترافي',
-                downloadLabel: 'تحميل التطبيق',
-                sizeLabel: 'حجم التطبيق',
-                versionPrefix: 'الإصدار',
-                supportText: 'الدعم',
-                langLabel: 'AR',
-                langIcon: '🇸🇦',
-                // app size and version will be injected from Go template
-            },
-            en: {
-                appName: 'Biscelor',
-                tagline: 'Professional Design System',
-                downloadLabel: 'Download App',
-                sizeLabel: 'App Size',
-                versionPrefix: 'Version',
-                supportText: 'Support',
-                langLabel: 'EN',
-                langIcon: '🇬🇧',
-            }
-        };
+    const fullscreen = document.getElementById("fullscreen");
+    fullscreen?.addEventListener("click",async()=>{
+        try{
+            if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+            else await document.exitFullscreen();
+        }catch(_){}
+    });
 
-        // ----- Detect current language (from HTML lang or localStorage) -----
-        let currentLang = document.documentElement.lang || 'ar';
-        // fallback: if lang is not ar/en, default to ar
-        if (currentLang !== 'ar' && currentLang !== 'en') {
-            currentLang = 'ar';
-        }
+    const language = document.getElementById("language");
+    language?.addEventListener("click",()=>{
+        const isArabic = document.documentElement.lang === "ar";
+        document.documentElement.lang = isArabic ? "en" : "ar";
+        document.documentElement.dir = isArabic ? "ltr" : "rtl";
+        language.textContent = isArabic ? "AR" : "EN";
+        localStorage.setItem("biscelor_lang", isArabic ? "en" : "ar");
+    });
+    const saved = localStorage.getItem("biscelor_lang");
+    if(saved==="en"){
+        document.documentElement.lang="en";
+        document.documentElement.dir="ltr";
+        if(language) language.textContent="AR";
+    }
 
-        // ----- Load saved preference -----
-        const savedLang = localStorage.getItem('biscelor_lang');
-        if (savedLang === 'ar' || savedLang === 'en') {
-            currentLang = savedLang;
-        }
+    const videoOpen = document.getElementById("videoOpen");
+    const videoClose = document.getElementById("videoClose");
+    const videoModal = document.getElementById("videoModal");
+    const video = document.getElementById("appVideo");
 
-        // ----- Apply language -----
-        function applyLanguage(lang) {
-            const t = translations[lang];
-            if (!t) return;
-
-            // update DOM
-            appName.textContent = t.appName;
-            tagline.textContent = t.tagline;
-            downloadLabel.textContent = t.downloadLabel;
-            langLabel.textContent = t.langLabel;
-            langIcon.textContent = t.langIcon;
-            // support link text is static in HTML, but we can update it if needed
-            // supportLink.textContent = t.supportText; // we keep it as 'الدعم' or 'Support' via innerHTML? let's set it.
-            supportLink.textContent = t.supportText;
-
-            // version prefix: we keep the version number from the template, but we can update the prefix
-            const versionNum = footerVersion.textContent.replace(/[^0-9.]/g, ''); // extract version number
-            if (versionNum) {
-                footerVersion.textContent = t.versionPrefix + ' ' + versionNum;
-            } else {
-                // if no version number, just show prefix
-                footerVersion.textContent = t.versionPrefix;
-            }
-
-            // update dir and lang attribute
-            if (lang === 'ar') {
-                document.documentElement.dir = 'rtl';
-                document.documentElement.lang = 'ar';
-            } else {
-                document.documentElement.dir = 'ltr';
-                document.documentElement.lang = 'en';
-            }
-
-            // save preference
-            localStorage.setItem('biscelor_lang', lang);
-            currentLang = lang;
-        }
-
-        // ----- Toggle handler -----
-        function toggleLanguage() {
-            const nextLang = currentLang === 'ar' ? 'en' : 'ar';
-            applyLanguage(nextLang);
-        }
-
-        langToggle.addEventListener('click', toggleLanguage);
-
-        // ----- initial apply -----
-        applyLanguage(currentLang);
-
-        // ----- (optional) Respect system dark/light via CSS media queries (already done) -----
-
-        // ----- Security: prevent clickjacking / basic CSP (handled by server) -----
-        // (No client-side eval, no inline dangerous scripts)
-
-        // ----- If download URL is missing, disable button -----
-        const downloadBtn = document.getElementById('downloadBtn');
-        if (downloadBtn.getAttribute('href') === '' || downloadBtn.getAttribute('href') === '#') {
-            downloadBtn.style.opacity = '0.6';
-            downloadBtn.style.cursor = 'default';
-            downloadBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('رابط التحميل غير متوفر حالياً / Download link not available');
-            });
-        }
-
-        // ----- Safe icon fallback without inline event handlers -----
-        const appIcon = document.getElementById('appIcon');
-        const fallbackIcon = appIcon.getAttribute('data-fallback');
-        if (fallbackIcon) {
-            appIcon.addEventListener('error', function() {
-                if (appIcon.src !== fallbackIcon) {
-                    appIcon.src = fallbackIcon;
-                }
-            }, { once: true });
-        }
-    })();
+    function closeVideo(){
+        if(!videoModal) return;
+        videoModal.classList.remove("open");
+        videoModal.setAttribute("aria-hidden","true");
+        video?.pause();
+    }
+    videoOpen?.addEventListener("click",()=>{
+        videoModal.classList.add("open");
+        videoModal.setAttribute("aria-hidden","false");
+        video?.play().catch(()=>{});
+    });
+    videoClose?.addEventListener("click",closeVideo);
+    videoModal?.addEventListener("click",(e)=>{
+        if(e.target===videoModal) closeVideo();
+    });
+    document.addEventListener("keydown",(e)=>{
+        if(e.key==="Escape") closeVideo();
+    });
+})();
 </script>
-
-<!-- Values are supplied by the server after validation. -->
 </body>
-  </html>
+</html>
