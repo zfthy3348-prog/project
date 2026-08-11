@@ -140,10 +140,6 @@
         .modal-box{width:min(1000px,100%);max-height:90vh;border-radius:24px;overflow:hidden;background:#0c0b09;position:relative}
         .modal video{width:100%;max-height:78vh;display:block}
         .modal-close{position:absolute;top:12px;left:12px;z-index:2;width:42px;height:42px;border-radius:50%;cursor:pointer;background:rgba(255,255,255,.9)}
-        .empty{
-            display:flex;align-items:center;justify-content:center;height:100%;min-height:260px;
-            color:#756a55;padding:20px;text-align:center
-        }
         @media (prefers-color-scheme:dark){
             :root{--ink:#f8f1e3;--muted:#c0b6a4;--paper:#18140d;--glass:rgba(31,26,17,.78);--line:rgba(228,195,107,.18)}
             body{background:radial-gradient(circle at 10% 0%,rgba(201,162,77,.13),transparent 28rem),#100e0a}
@@ -181,7 +177,7 @@
             <div class="hero-copy">
                 <span class="eyebrow">✦ تجربة فاخرة وسريعة</span>
                 <h1>{{.AppName}}<br><span class="gold-text">بشكل أجمل.</span></h1>
-                <p>{{.Tagline}} — استعرض صور التطبيق، شاهد الفيديو، واختر الإصدار المناسب لك من مكان واحد.</p>
+                <p>{{.Tagline}}</p>
                 <div class="hero-buttons">
                     {{if .DownloadURL}}<a class="gold-btn" href="{{.DownloadURL}}" target="_blank" rel="noopener noreferrer">⬇ تحميل الإصدار الحالي</a>{{end}}
                     {{if .VideoURL}}<button class="icon-btn" id="videoOpen" type="button">▶ مشاهدة الفيديو</button>{{end}}
@@ -189,26 +185,22 @@
                 <div class="hero-meta">
                     <span class="pill">الإصدار {{.AppVersion}}</span>
                     <span class="pill">الحجم {{.AppSize}}</span>
-                    <span class="pill">ٍ</span>
                 </div>
             </div>
 
+            {{if .Gallery}}
             <div class="showcase" id="showcase">
                 <div class="gallery" id="gallery">
-                    {{if .Gallery}}
-                        {{range $i, $item := .Gallery}}
-                        <div class="slide{{if eq $i 0}} active{{end}}" data-index="{{$i}}">
-                            <img src="{{$item.ImageURL}}" alt="{{$item.Alt}}" loading="{{if eq $i 0}}eager{{else}}lazy{{end}}" decoding="async" referrerpolicy="no-referrer">
-                        </div>
-                        {{end}}
-                        <div class="gallery-shade"></div>
-                        <div class="gallery-caption"></div>
-                        <div class="dots" id="dots">
-                            {{range $i, $item := .Gallery}}<button class="dot{{if eq $i 0}} active{{end}}" data-slide="{{$i}}" aria-label="الصورة {{$i | printf "%d"}}"></button>{{end}}
-                        </div>
-                    {{else}}
-                        <div class="empty"><br><b>APP_ICON_URL</b> <b>GALLERY_URLS</b></div>
+                    {{range $i, $item := .Gallery}}
+                    <div class="slide{{if eq $i 0}} active{{end}}" data-index="{{$i}}">
+                        <img src="{{$item.ImageURL}}" alt="{{$item.Alt}}" loading="{{if eq $i 0}}eager{{else}}lazy{{end}}" decoding="async" referrerpolicy="no-referrer">
+                    </div>
                     {{end}}
+                    <div class="gallery-shade"></div>
+                    <div class="gallery-caption">لقطات حية من التطبيق</div>
+                    <div class="dots" id="dots">
+                        {{range $i, $item := .Gallery}}<button class="dot{{if eq $i 0}} active{{end}}" data-slide="{{$i}}" aria-label="الصورة {{$i | printf "%d"}}"></button>{{end}}
+                    </div>
                 </div>
                 <div class="showcase-tools">
                     <button class="tool" id="prev" type="button">‹ السابقة</button>
@@ -216,11 +208,12 @@
                     <button class="tool" id="next" type="button">التالية ›</button>
                 </div>
             </div>
+            {{end}}
         </section>
 
+        {{if .Versions}}
         <section id="versions">
             <h2 class="section-title">الإصدارات</h2>
-            <p class="section-sub">.</p>
             <div class="grid">
                 {{range .Versions}}
                 <article class="panel version-card">
@@ -238,6 +231,7 @@
                 {{end}}
             </div>
         </section>
+        {{end}}
 
         <section id="premium">
             <div class="pricing">
@@ -248,21 +242,22 @@
                     <ul class="feature-list">
                         <li>ملف ZIP للمشروع أو النسخة المطلوبة</li>
                         <li>نسخة تطبيق جاهزة عند توفير رابطها</li>
-                        <li></li>
-                        <li></li>
+                        <li>إمكانية الوصول للإصدارات المتقدمة</li>
+                        <li>دعم مخصص وتحديثات مستمرة</li>
                     </ul>
                     <div class="version-actions">
                         {{if .PremiumAppURL}}<a class="gold-btn" href="{{.PremiumAppURL}}" target="_blank" rel="noopener noreferrer">تحميل التطبيق</a>{{end}}
                         {{if .PremiumZipURL}}<a class="icon-btn" href="{{.PremiumZipURL}}" target="_blank" rel="noopener noreferrer">تحميل ZIP</a>{{end}}
                     </div>
-                    <p class="notes">.</p>
                 </div>
 
+                {{if .AdTitle}}
                 <div class="panel">
-                 
-                    <p class="section-sub">.</p>
-                    <div class="ad"><div><strong></strong><br><span>.</span></div><span>✦</span></div>
+                    <h2>{{.AdTitle}}</h2>
+                    <p class="section-sub">{{.AdSubtitle}}</p>
+                    <div class="ad"><div><strong>{{.AdHeading}}</strong><br><span>{{.AdText}}</span></div><span>✦</span></div>
                 </div>
+                {{end}}
             </div>
         </section>
     </main>
