@@ -189,7 +189,7 @@
                 <div class="hero-meta">
                     <span class="pill">الإصدار {{.AppVersion}}</span>
                     <span class="pill">الحجم {{.AppSize}}</span>
-                    <span class="pill">صور متحركة كل 5 ثوانٍ</span>
+                    <span class="pill">ٍ</span>
                 </div>
             </div>
 
@@ -202,12 +202,12 @@
                         </div>
                         {{end}}
                         <div class="gallery-shade"></div>
-                        <div class="gallery-caption">لقطات حية من التطبيق</div>
+                        <div class="gallery-caption"></div>
                         <div class="dots" id="dots">
                             {{range $i, $item := .Gallery}}<button class="dot{{if eq $i 0}} active{{end}}" data-slide="{{$i}}" aria-label="الصورة {{$i | printf "%d"}}"></button>{{end}}
                         </div>
                     {{else}}
-                        <div class="empty">ضع رابط صورة التطبيق الحقيقي في<br><b>APP_ICON_URL</b> أو روابط الصور في <b>GALLERY_URLS</b></div>
+                        <div class="empty"><br><b>APP_ICON_URL</b> <b>GALLERY_URLS</b></div>
                     {{end}}
                 </div>
                 <div class="showcase-tools">
@@ -220,7 +220,7 @@
 
         <section id="versions">
             <h2 class="section-title">الإصدارات</h2>
-            <p class="section-sub">احتفظ بإصدارات 2026 و2027 وما بعدها. يمكنك إضافة إصدارات جديدة من إعدادات الخادم دون تغيير التصميم.</p>
+            <p class="section-sub">.</p>
             <div class="grid">
                 {{range .Versions}}
                 <article class="panel version-card">
@@ -248,20 +248,20 @@
                     <ul class="feature-list">
                         <li>ملف ZIP للمشروع أو النسخة المطلوبة</li>
                         <li>نسخة تطبيق جاهزة عند توفير رابطها</li>
-                        <li>إمكانية إضافة إصدارات مستقبلية 2027+</li>
-                        <li>واجهة مرنة لإضافة عروض وإعلانات</li>
+                        <li></li>
+                        <li></li>
                     </ul>
                     <div class="version-actions">
                         {{if .PremiumAppURL}}<a class="gold-btn" href="{{.PremiumAppURL}}" target="_blank" rel="noopener noreferrer">تحميل التطبيق</a>{{end}}
                         {{if .PremiumZipURL}}<a class="icon-btn" href="{{.PremiumZipURL}}" target="_blank" rel="noopener noreferrer">تحميل ZIP</a>{{end}}
                     </div>
-                    <p class="notes">مهم: صلاحية الاشتراك نفسها يجب أن تُتحقق في نظام الحساب/الدفع على الخادم. لا تعتمد على JavaScript لإخفاء ملف مدفوع.</p>
+                    <p class="notes">.</p>
                 </div>
 
                 <div class="panel">
-                    <h2>مساحة إعلان مرنة</h2>
-                    <p class="section-sub">يمكنك وضع إعلان، صورة ترويجية، أو عرض موسمي هنا. التصميم لا يعتمد على حجم ثابت للصورة.</p>
-                    <div class="ad"><div><strong>مساحتك الإعلانية</strong><br><span>جاهزة لإضافة حملة أو عرض جديد.</span></div><span>✦</span></div>
+                 
+                    <p class="section-sub">.</p>
+                    <div class="ad"><div><strong></strong><br><span>.</span></div><span>✦</span></div>
                 </div>
             </div>
         </section>
