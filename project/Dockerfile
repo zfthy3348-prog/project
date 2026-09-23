@@ -8,6 +8,9 @@ RUN go mod download
 
 COPY . .
 
+# Make sure the folder exists even if no images were added yet.
+RUN mkdir -p templates/app_icon_url
+
 # Build a static binary without a shell dependency at runtime.
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build     -trimpath     -ldflags="-s -w"     -o /out/download-page .
 
@@ -19,6 +22,7 @@ WORKDIR /app
 
 COPY --from=builder /out/download-page /app/download-page
 COPY --from=builder /app/index.html /app/index.html
+COPY --from=builder /app/templates /app/templates
 
 RUN chown -R app:app /app
 
