@@ -9,12 +9,14 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 )
 
 const maxSlots = 12
+const assetsDir = "templates"
 
 type GalleryItem struct {
 	ImageURL string
@@ -56,6 +58,7 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+	mux.Handle("/assets/", assetsHandler(assetsDir))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			http.NotFound(w, r)
@@ -105,7 +108,15 @@ func main() {
 
 func loadConfig() PageData {
 	appIcon := safeHTTPSURL(os.Getenv("APP_ICON_URL"), "")
+	if localIcon := scanIcon(assetsDir); localIcon != "" {
+		appIcon = localIcon
+	}
+
 	gallery := parseGallery()
+	if localGallery := scanGallery(assetsDir); len(localGallery) > 0 {
+		gallery = localGallery
+	}
+
 	versions := parseVersions()
 
 	if len(gallery) == 0 && appIcon != "" {
@@ -146,6 +157,70 @@ func loadConfig() PageData {
 		PremiumPrice:  cleanText(os.Getenv("PREMIUM_PRICE"), 40, "50%"),
 		PremiumLabel:  cleanText(os.Getenv("PREMIUM_LABEL"), 80, "الباقة المميزة"),
 	}
+}
+
+// scanIcon looks inside templates/app_icon_url/ for the first image file
+// and returns it as a local /assets/ URL, or "" if none is found.
+func scanIcon(root string) string {
+	dir := filepath.Join(root, "app_icon_url")
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return ""
+	}
+	for _, e := range entries {
+		if e.IsDir() || !isImageFile(e.Name()) {
+			continue
+		}
+		return "/assets/app_icon_url/" + e.Name()
+	}
+	return ""
+}
+
+// scanGallery looks at the top level of templates/ (not sub-folders) for
+// image files and returns them as local /assets/ URLs, in filename order.
+func scanGallery(root string) []GalleryItem {
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		return nil
+	}
+	var out []GalleryItem
+	for _, e := range entries {
+		if e.IsDir() || !isImageFile(e.Name()) {
+			continue
+		}
+		out = append(out, GalleryItem{ImageURL: "/assets/" + e.Name(), Alt: "لقطة من تطبيق Biscelor"})
+		if len(out) >= maxSlots {
+			break
+		}
+	}
+	return out
+}
+
+func isImageFile(name string) bool {
+	switch strings.ToLower(filepath.Ext(name)) {
+	case ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg":
+		return true
+	default:
+		return false
+	}
+}
+
+// assetsHandler serves image files from the given directory under /assets/,
+// without exposing directory listings.
+func assetsHandler(root string) http.Handler {
+	fileServer := http.FileServer(http.Dir(root))
+	handler := http.StripPrefix("/assets/", fileServer)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		clean := filepath.Clean(r.URL.Path)
+		full := filepath.Join(root, strings.TrimPrefix(clean, "/assets"))
+		if info, err := os.Stat(full); err != nil || info.IsDir() || !isImageFile(full) {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		handler.ServeHTTP(w, r)
+	})
 }
 
 // parseGallery reads GALLERY_1, GALLERY_2, ... GALLERY_12 (gaps allowed).
