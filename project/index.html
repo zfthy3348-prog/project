@@ -218,14 +218,13 @@
                 {{range .Versions}}
                 <article class="panel version-card">
                     <div class="version-top">
-                        <span class="year">{{.Year}}</span>
-                        {{if .Published}}<span class="badge">متاح</span>{{else}}<span class="badge">قريباً</span>{{end}}
+                        <span class="year">{{.Version}}</span>
+                        <span class="badge">متاح</span>
                     </div>
                     <div class="version-number">Version {{.Version}}</div>
-                    <div class="notes">{{.Notes}}</div>
                     <div class="notes">الحجم: {{.Size}}</div>
                     <div class="version-actions">
-                        {{if .Published}}{{if .AppURL}}<a class="gold-btn" href="{{.AppURL}}" target="_blank" rel="noopener noreferrer">تطبيق جاهز</a>{{end}}{{if .ZipURL}}<a class="icon-btn" href="{{.ZipURL}}" target="_blank" rel="noopener noreferrer">ZIP مضغوط</a>{{end}}{{end}}
+                        {{if .ZipURL}}<a class="icon-btn" href="{{.ZipURL}}" target="_blank" rel="noopener noreferrer">ZIP مضغوط</a>{{end}}{{if .AppURL}}<a class="gold-btn" href="{{.AppURL}}" target="_blank" rel="noopener noreferrer">تطبيق جاهز</a>{{end}}
                     </div>
                 </article>
                 {{end}}
