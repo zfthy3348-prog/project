@@ -81,7 +81,7 @@
             background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(244,229,190,.55));
             border:1px solid var(--line);box-shadow:var(--shadow)
         }
-        .gallery{position:relative;aspect-ratio:4/4.5;border-radius:30px;overflow:hidden;background:#e9dfc8}
+        .gallery{position:relative;aspect-ratio:3/4;border-radius:30px;overflow:hidden;background:#e9dfc8;transition:aspect-ratio .3s ease}
         .slide{
             position:absolute;inset:0;opacity:0;transition:opacity .6s ease;
             display:flex;align-items:center;justify-content:center
@@ -199,7 +199,6 @@
                 </div>
                 <div class="showcase-tools">
                     <button class="tool" id="prev" type="button">‹ السابقة</button>
-                    <button class="tool" id="pause" type="button">Ⅱ إيقاف</button>
                     <button class="tool" id="next" type="button">التالية ›</button>
                 </div>
             </div>
@@ -278,83 +277,84 @@
 (function(){
     "use strict";
 
-    const slides = Array.from(document.querySelectorAll(".slide"));
-    const dots = Array.from(document.querySelectorAll(".dot"));
-    const next = document.getElementById("next");
-    const prev = document.getElementById("prev");
-    const pause = document.getElementById("pause");
-    let current = 0;
-    let timer = null;
-    let running = true;
+    var gallery = document.getElementById("gallery");
+    var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+    var dots = Array.prototype.slice.call(document.querySelectorAll(".dot"));
+    var next = document.getElementById("next");
+    var prev = document.getElementById("prev");
+    var current = 0;
+    var timer = null;
+
+    function setRatio(img){
+        if(gallery && img && img.naturalWidth && img.naturalHeight){
+            gallery.style.aspectRatio = img.naturalWidth + " / " + img.naturalHeight;
+        }
+    }
 
     function show(index){
         if(!slides.length) return;
         current = (index + slides.length) % slides.length;
-        slides.forEach((el,i)=>el.classList.toggle("active",i===current));
-        dots.forEach((el,i)=>el.classList.toggle("active",i===current));
+        for(var i=0;i<slides.length;i++){
+            var isActive = i===current;
+            if(isActive){ slides[i].className = "slide active"; } else { slides[i].className = "slide"; }
+        }
+        for(var d=0;d<dots.length;d++){
+            if(d===current){ dots[d].className = "dot active"; } else { dots[d].className = "dot"; }
+        }
+        var img = slides[current].querySelector("img");
+        if(img){
+            if(img.complete){
+                setRatio(img);
+            } else {
+                img.addEventListener("load", function(){ setRatio(img); });
+            }
+        }
     }
+
     function start(){
         if(slides.length < 2) return;
-        clearInterval(timer);
-        timer = setInterval(()=>show(current+1),5000);
-        running = true;
-        if(pause) pause.textContent = "Ⅱ إيقاف";
+        if(timer) clearInterval(timer);
+        timer = setInterval(function(){ show(current+1); }, 30000);
     }
-    function stop(){
-        clearInterval(timer);
-        running = false;
-        if(pause) pause.textContent = "▶ تشغيل";
+
+    if(next) next.addEventListener("click", function(){ show(current+1); start(); });
+    if(prev) prev.addEventListener("click", function(){ show(current-1); start(); });
+    for(var k=0;k<dots.length;k++){
+        (function(dot){
+            dot.addEventListener("click", function(){
+                show(Number(dot.getAttribute("data-slide")));
+                start();
+            });
+        })(dots[k]);
     }
-    next?.addEventListener("click",()=>{show(current+1);start()});
-    prev?.addEventListener("click",()=>{show(current-1);start()});
-    dots.forEach(d=>d.addEventListener("click",()=>{show(Number(d.dataset.slide));start()}));
-    pause?.addEventListener("click",()=>running?stop():start());
+    show(0);
     start();
 
-    const fullscreen = document.getElementById("fullscreen");
-    fullscreen?.addEventListener("click",async()=>{
-        try{
-            if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
-            else await document.exitFullscreen();
-        }catch(_){}
-    });
-
-    const language = document.getElementById("language");
-    language?.addEventListener("click",()=>{
-        const isArabic = document.documentElement.lang === "ar";
-        document.documentElement.lang = isArabic ? "en" : "ar";
-        document.documentElement.dir = isArabic ? "ltr" : "rtl";
-        language.textContent = isArabic ? "AR" : "EN";
-        localStorage.setItem("biscelor_lang", isArabic ? "en" : "ar");
-    });
-    const saved = localStorage.getItem("biscelor_lang");
-    if(saved==="en"){
-        document.documentElement.lang="en";
-        document.documentElement.dir="ltr";
-        if(language) language.textContent="AR";
-    }
-
-    const videoOpen = document.getElementById("videoOpen");
-    const videoClose = document.getElementById("videoClose");
-    const videoModal = document.getElementById("videoModal");
-    const video = document.getElementById("appVideo");
+    var videoOpen = document.getElementById("videoOpen");
+    var videoClose = document.getElementById("videoClose");
+    var videoModal = document.getElementById("videoModal");
+    var video = document.getElementById("appVideo");
 
     function closeVideo(){
         if(!videoModal) return;
-        videoModal.classList.remove("open");
+        videoModal.className = "modal";
         videoModal.setAttribute("aria-hidden","true");
-        video?.pause();
+        if(video) video.pause();
     }
-    videoOpen?.addEventListener("click",()=>{
-        videoModal.classList.add("open");
-        videoModal.setAttribute("aria-hidden","false");
-        video?.play().catch(()=>{});
-    });
-    videoClose?.addEventListener("click",closeVideo);
-    videoModal?.addEventListener("click",(e)=>{
-        if(e.target===videoModal) closeVideo();
-    });
-    document.addEventListener("keydown",(e)=>{
+    if(videoOpen){
+        videoOpen.addEventListener("click", function(){
+            videoModal.className = "modal open";
+            videoModal.setAttribute("aria-hidden","false");
+            if(video){ video.play().catch(function(){}); }
+        });
+    }
+    if(videoClose) videoClose.addEventListener("click", closeVideo);
+    if(videoModal){
+        videoModal.addEventListener("click", function(e){
+            if(e.target===videoModal) closeVideo();
+        });
+    }
+    document.addEventListener("keydown", function(e){
         if(e.key==="Escape") closeVideo();
     });
 })();
