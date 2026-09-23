@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"html/template"
 	"log"
@@ -15,19 +14,18 @@ import (
 	"time"
 )
 
+const maxSlots = 12
+
 type GalleryItem struct {
 	ImageURL string
 	Alt      string
 }
 
 type Version struct {
-	Year      string
-	Version   string
-	Size      string
-	Notes     string
-	AppURL    string
-	ZipURL    string
-	Published bool
+	Version string
+	Size    string
+	AppURL  string
+	ZipURL  string
 }
 
 type PageData struct {
@@ -107,32 +105,37 @@ func main() {
 
 func loadConfig() PageData {
 	appIcon := safeHTTPSURL(os.Getenv("APP_ICON_URL"), "")
-	gallery := parseGallery(os.Getenv("GALLERY_URLS"))
-	versions := parseVersions(os.Getenv("VERSIONS_JSON"))
+	gallery := parseGallery()
+	versions := parseVersions()
 
 	if len(gallery) == 0 && appIcon != "" {
 		gallery = []GalleryItem{{ImageURL: appIcon, Alt: "Biscelor"}}
 	}
 
-	if len(versions) == 0 {
-		versions = []Version{{
-			Year:      "2026",
-			Version:   cleanVersion(os.Getenv("APP_VERSION")),
-			Size:      cleanText(os.Getenv("APP_SIZE"), 32, "—"),
-			Notes:     "الإصدار الحالي",
-			AppURL:    safeHTTPSURL(os.Getenv("DOWNLOAD_URL"), ""),
-			ZipURL:    "",
-			Published: true,
-		}}
+	heroVersion := cleanVersion(os.Getenv("APP_VERSION"))
+	heroSize := cleanText(os.Getenv("APP_SIZE"), 32, "—")
+	heroDownload := safeHTTPSURL(os.Getenv("DOWNLOAD_URL"), "")
+	if len(versions) > 0 {
+		if versions[0].Version != "—" {
+			heroVersion = versions[0].Version
+		}
+		if versions[0].Size != "—" {
+			heroSize = versions[0].Size
+		}
+		if versions[0].AppURL != "" {
+			heroDownload = versions[0].AppURL
+		} else if versions[0].ZipURL != "" {
+			heroDownload = versions[0].ZipURL
+		}
 	}
 
 	return PageData{
 		AppIconURL:    appIcon,
 		AppName:       cleanText(os.Getenv("APP_NAME"), 80, "Biscelor"),
 		Tagline:       cleanText(os.Getenv("APP_TAGLINE"), 160, "نظام التصميم الاحترافي"),
-		AppSize:       cleanText(os.Getenv("APP_SIZE"), 32, "—"),
-		AppVersion:    cleanVersion(os.Getenv("APP_VERSION")),
-		DownloadURL:   safeHTTPSURL(os.Getenv("DOWNLOAD_URL"), ""),
+		AppSize:       heroSize,
+		AppVersion:    heroVersion,
+		DownloadURL:   heroDownload,
 		SiteURL:       safeHTTPSURL(os.Getenv("SITE_URL"), ""),
 		SupportLink:   safeSupportURL(os.Getenv("SUPPORT_LINK")),
 		VideoURL:      safeHTTPSURL(os.Getenv("VIDEO_URL"), ""),
@@ -145,77 +148,39 @@ func loadConfig() PageData {
 	}
 }
 
-func parseGallery(value string) []GalleryItem {
+// parseGallery reads GALLERY_1, GALLERY_2, ... GALLERY_12 (gaps allowed).
+func parseGallery() []GalleryItem {
 	var out []GalleryItem
-	for _, raw := range strings.Split(value, ",") {
-		u := safeHTTPSURL(strings.TrimSpace(raw), "")
-		if u != "" {
-			out = append(out, GalleryItem{ImageURL: u, Alt: "لقطة من تطبيق Biscelor"})
+	for i := 1; i <= maxSlots; i++ {
+		raw := os.Getenv("GALLERY_" + strconv.Itoa(i))
+		u := safeHTTPSURL(raw, "")
+		if u == "" {
+			continue
 		}
-		if len(out) >= 12 {
-			break
-		}
+		out = append(out, GalleryItem{ImageURL: u, Alt: "لقطة من تطبيق Biscelor"})
 	}
 	return out
 }
 
-func parseVersions(value string) []Version {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return nil
-	}
-
-	var raw []struct {
-		Year      string `json:"year"`
-		Version   string `json:"version"`
-		Size      string `json:"size"`
-		Notes     string `json:"notes"`
-		AppURL    string `json:"app_url"`
-		ZipURL    string `json:"zip_url"`
-		Published bool   `json:"published"`
-	}
-	if err := json.Unmarshal([]byte(value), &raw); err != nil {
-		log.Printf("invalid VERSIONS_JSON: %v", err)
-		return nil
-	}
-
-	out := make([]Version, 0, len(raw))
-	for _, item := range raw {
-		year := cleanYear(item.Year)
-		if year == "" {
+// parseVersions reads VERSION_1/SIZE_1/DOWNLOAD_1/ZIP_1 ... up to _12 (gaps allowed).
+// A slot becomes a version entry if it has an apk link (DOWNLOAD_N) or a zip link (ZIP_N).
+func parseVersions() []Version {
+	var out []Version
+	for i := 1; i <= maxSlots; i++ {
+		suffix := strconv.Itoa(i)
+		appURL := safeHTTPSURL(os.Getenv("DOWNLOAD_"+suffix), "")
+		zipURL := safeHTTPSURL(os.Getenv("ZIP_"+suffix), "")
+		if appURL == "" && zipURL == "" {
 			continue
 		}
 		out = append(out, Version{
-			Year:      year,
-			Version:   cleanVersion(item.Version),
-			Size:      cleanText(item.Size, 32, "—"),
-			Notes:     cleanText(item.Notes, 240, ""),
-			AppURL:    safeHTTPSURL(item.AppURL, ""),
-			ZipURL:    safeHTTPSURL(item.ZipURL, ""),
-			Published: item.Published,
+			Version: cleanVersion(os.Getenv("VERSION_" + suffix)),
+			Size:    cleanText(os.Getenv("SIZE_"+suffix), 32, "—"),
+			AppURL:  appURL,
+			ZipURL:  zipURL,
 		})
-		if len(out) >= 20 {
-			break
-		}
 	}
 	return out
-}
-
-func cleanYear(value string) string {
-	value = strings.TrimSpace(value)
-	if len(value) != 4 {
-		return ""
-	}
-	for _, r := range value {
-		if r < '0' || r > '9' {
-			return ""
-		}
-	}
-	n, _ := strconv.Atoi(value)
-	if n < 2000 || n > 2100 {
-		return ""
-	}
-	return value
 }
 
 func securityMiddleware(next http.Handler) http.Handler {
@@ -322,14 +287,19 @@ func cleanVersion(value string) string {
 		return "—"
 	}
 	if len(value) > 32 {
-		return "—"
+		value = value[:32]
 	}
+	var b strings.Builder
+	b.Grow(len(value))
 	for _, r := range value {
-		if !(r >= '0' && r <= '9') && r != '.' && r != '-' && r != '_' {
-			return "—"
+		if r >= 0x20 && r != 0x7f && !strings.ContainsRune("<>\"'`", r) {
+			b.WriteRune(r)
 		}
 	}
-	return value
+	if b.Len() == 0 {
+		return "—"
+	}
+	return b.String()
 }
 
 func validPort(value string) bool {
