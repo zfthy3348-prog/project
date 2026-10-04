@@ -81,7 +81,7 @@
             background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(244,229,190,.55));
             border:1px solid var(--line);box-shadow:var(--shadow)
         }
-        .gallery{position:relative;aspect-ratio:3/4;border-radius:30px;overflow:hidden;background:#e9dfc8;transition:aspect-ratio .3s ease}
+        .gallery{touch-action:pan-y;position:relative;aspect-ratio:3/4;border-radius:30px;overflow:hidden;background:#e9dfc8;transition:aspect-ratio .3s ease}
         .slide{
             position:absolute;inset:0;opacity:0;transition:opacity .6s ease;
             display:flex;align-items:center;justify-content:center
@@ -189,17 +189,13 @@
                 <div class="gallery" id="gallery">
                     {{range $i, $item := .Gallery}}
                     <div class="slide{{if eq $i 0}} active{{end}}" data-index="{{$i}}">
-                        <img src="{{$item.ImageURL}}" alt="{{$item.Alt}}" loading="{{if eq $i 0}}eager{{else}}lazy{{end}}" decoding="async" referrerpolicy="no-referrer">
+                        <img src="{{$item.ImageURL}}" alt="{{$item.Alt}}" loading="eager" decoding="async" referrerpolicy="no-referrer">
                     </div>
                     {{end}}
                     <div class="gallery-shade"></div>
                     <div class="dots" id="dots">
                         {{range $i, $item := .Gallery}}<button class="dot{{if eq $i 0}} active{{end}}" data-slide="{{$i}}" aria-label="الصورة {{$i | printf "%d"}}"></button>{{end}}
                     </div>
-                </div>
-                <div class="showcase-tools">
-                    <button class="tool" id="prev" type="button">‹ السابقة</button>
-                    <button class="tool" id="next" type="button">التالية ›</button>
                 </div>
             </div>
             {{end}}
@@ -280,8 +276,6 @@
     var gallery = document.getElementById("gallery");
     var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
     var dots = Array.prototype.slice.call(document.querySelectorAll(".dot"));
-    var next = document.getElementById("next");
-    var prev = document.getElementById("prev");
     var current = 0;
     var timer = null;
 
@@ -314,11 +308,30 @@
     function start(){
         if(slides.length < 2) return;
         if(timer) clearInterval(timer);
-        timer = setInterval(function(){ show(current+1); }, 30000);
+        timer = setInterval(function(){ show(current+1); }, 3000);
     }
 
-    if(next) next.addEventListener("click", function(){ show(current+1); start(); });
-    if(prev) prev.addEventListener("click", function(){ show(current-1); start(); });
+    var startX = 0, startY = 0, tracking = false;
+    if(gallery){
+        gallery.addEventListener("touchstart", function(e){
+            if(e.touches.length !== 1){ tracking = false; return; }
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            tracking = true;
+        }, {passive:true});
+        gallery.addEventListener("touchend", function(e){
+            if(!tracking) return;
+            tracking = false;
+            var t = e.changedTouches[0];
+            var dx = t.clientX - startX;
+            var dy = t.clientY - startY;
+            if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+            // الصفحة RTL: السحب لليمين = التالية، لليسار = السابقة
+            if(dx > 0){ show(current+1); } else { show(current-1); }
+            start();
+        }, {passive:true});
+        gallery.addEventListener("touchcancel", function(){ tracking = false; }, {passive:true});
+    }
     for(var k=0;k<dots.length;k++){
         (function(dot){
             dot.addEventListener("click", function(){
