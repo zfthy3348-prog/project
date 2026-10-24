@@ -46,6 +46,7 @@ type PageData struct {
 	PremiumAppURL string
 	PremiumPrice  string
 	PremiumLabel  string
+	AdTitle       string
 	CSPNonce      string
 }
 
@@ -156,6 +157,7 @@ func loadConfig() PageData {
 		PremiumAppURL: safeHTTPSURL(os.Getenv("PREMIUM_APP_URL"), ""),
 		PremiumPrice:  cleanText(os.Getenv("PREMIUM_PRICE"), 40, "50%"),
 		PremiumLabel:  cleanText(os.Getenv("PREMIUM_LABEL"), 80, "الباقة المميزة"),
+		AdTitle:       cleanText(os.Getenv("AD_TITLE"), 120, ""),
 	}
 }
 
